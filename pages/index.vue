@@ -2,6 +2,7 @@
   main
     Navigation
     Section1
+    h1 test!!
     h5 Below is asyncData fetched
     pre {{ extract }}
     nuxt-link(to="/1") to 1
@@ -50,4 +51,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+	h1{
+		font-size: 100px;
+	}
 </style>
