@@ -88,7 +88,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 var app = __WEBPACK_IMPORTED_MODULE_0_express___default()();
-var host = process.env.HOST || '127.0.0.1';
+// const host = process.env.HOST || '127.0.0.1';
 var port = process.env.PORT || 8080;
 
 app.set('port', port);
@@ -99,7 +99,7 @@ app.use('/api', __WEBPACK_IMPORTED_MODULE_2__api__["a" /* default */]);
 // Import and Set Nuxt.js options
 var config = __webpack_require__(5);
 
-config.dev = !("development" === 'production');
+config.dev = !("production" === 'production');
 
 // Init Nuxt.js
 var nuxt = new __WEBPACK_IMPORTED_MODULE_1_nuxt__["Nuxt"](config);
@@ -114,8 +114,8 @@ if (config.dev) {
 app.use(nuxt.render);
 
 // Listen the server
-app.listen(port, host);
-console.log('Server listening on ' + host + ': ' + port); // eslint-disable-line no-console
+app.listen(port);
+console.log('Server listening on localhost: ' + port); // eslint-disable-line no-console
 
 /***/ }),
 /* 2 */

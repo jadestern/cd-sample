@@ -4,7 +4,7 @@ import { Nuxt, Builder } from 'nuxt';
 import api from './api';
 
 const app = express();
-const host = process.env.HOST || '127.0.0.1';
+// const host = process.env.HOST || '127.0.0.1';
 const port = process.env.PORT || 8080;
 
 app.set('port', port);
@@ -30,5 +30,5 @@ if (config.dev) {
 app.use(nuxt.render);
 
 // Listen the server
-app.listen(port, host);
-console.log(`Server listening on ${host}: ${port}`); // eslint-disable-line no-console
+app.listen(port);
+console.log(`Server listening on localhost: ${port}`); // eslint-disable-line no-console

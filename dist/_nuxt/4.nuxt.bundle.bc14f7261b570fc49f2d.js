@@ -1,2 +1,0 @@
-webpackJsonp([4],{178:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var u=n(197),r=n(198),a=n(18),c=a(u.a,r.a,null,null,null);t.default=c.exports},197:function(e,t,n){"use strict";t.a={name:"Slug",layout:"custom"}},198:function(e,t,n){"use strict";var u=function(){var e=this,t=e.$createElement;e._self._c;return e._m(0)},r=[function(){var e=this,t=e.$createElement,n=e._self._c||t;return n("div",[n("h1",[e._v("Slug")])])}],a={render:u,staticRenderFns:r};t.a=a}});
-//# sourceMappingURL=4.nuxt.bundle.bc14f7261b570fc49f2d.js.map
