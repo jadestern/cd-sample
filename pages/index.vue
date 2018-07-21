@@ -2,7 +2,7 @@
   main
     Navigation
     Section1
-    h1 test!!
+    h1 test!! what's up
     h5 Below is asyncData fetched
     pre {{ extract }}
     nuxt-link(to="/1") to 1
