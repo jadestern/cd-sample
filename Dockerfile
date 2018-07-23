@@ -2,6 +2,8 @@ FROM node:8.11.3
 
 MAINTAINER KyuHoon Koh <kyuhoon@terafunding.com>
 
+ENV HOST 0.0.0.0
+
 # Global install yarn package manager
 RUN apt-get update && apt-get install -y curl apt-transport-https && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
