@@ -40,7 +40,7 @@ export default {
   		return _
 				  .chain(this.dataArr)
 				  .map((item) => {
-				  	return item * 3
+				  	return item * 10
 				  });
 	  }
 	}
