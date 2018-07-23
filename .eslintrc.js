@@ -1,28 +1,21 @@
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   env: {
     browser: true,
-    node: true,
+    node: true
   },
-  extends: 'airbnb-base',
+  parserOptions: {
+    parser: 'babel-eslint'
+  },
+  extends: [
+    // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
+    // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
+    'plugin:vue/essential'
+  ],
   // required to lint *.vue files
   plugins: [
-    'html',
+    'vue'
   ],
   // add your custom rules here
-  rules: {
-    // don't require .vue extension when importing
-    'import/extensions': ['error', 'always', {
-      js: 'never',
-      vue: 'never'
-    }],
-  },
-  globals: {},
-  settings: {
-    'import/resolver': {
-      webpack: 'webpack.config.js',
-    },
-  },
-};
-
+  rules: {}
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="progress" :style="{
+  <div class="nuxt-progress" :style="{
     'width': percent+'%',
     'height': height,
     'background-color': canSuccess? color : failedColor,
@@ -19,7 +19,7 @@ export default {
       canSuccess: true,
       duration: 5000,
       height: '2px',
-      color: '#448aff',
+      color: '#3B8070',
       failedColor: 'red',
     }
   },
@@ -87,8 +87,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.progress {
+<style>
+.nuxt-progress {
   position: fixed;
   top: 0px;
   left: 0px;

@@ -2,15 +2,20 @@ import 'es6-promise/auto'
 import Vue from 'vue'
 import Meta from 'vue-meta'
 import { createRouter } from './router.js'
+import NoSSR from './components/no-ssr.js'
 import NuxtChild from './components/nuxt-child.js'
 import NuxtLink from './components/nuxt-link.js'
-import NuxtError from '../layouts/error.vue'
-import Nuxt from './components/nuxt.vue'
-import App from './App.vue'
-import { getContext, getLocation } from './utils'
-import { createStore } from './store.js'
-import plugin0 from 'plugin0'
+import NuxtError from './components/nuxt-error.vue'
+import Nuxt from './components/nuxt.js'
+import App from './App.js'
+import { setContext, getLocation, getRouteData } from './utils'
 
+
+/* Plugins */
+
+
+// Component: <no-ssr>
+Vue.component(NoSSR.name, NoSSR)
 
 // Component: <nuxt-child>
 Vue.component(NuxtChild.name, NuxtChild)
@@ -29,26 +34,11 @@ Vue.use(Meta, {
   tagIDKeyName: 'hid' // the property name that vue-meta uses to determine whether to overwrite or append a tag
 })
 
-const defaultTransition = {"name":"page","mode":"out-in"}
+const defaultTransition = {"name":"page","mode":"out-in","appear":false,"appearClass":"appear","appearActiveClass":"appear-active","appearToClass":"appear-to"}
 
 async function createApp (ssrContext) {
-  const router = createRouter()
+  const router = createRouter(ssrContext)
 
-  const store = createStore()
-
-  if (process.server && ssrContext && ssrContext.url) {
-    await new Promise((resolve, reject) => {
-      router.push(ssrContext.url, resolve, reject)
-    })
-  }
-
-  
-  if (process.browser) {
-    // Replace store state before calling plugins
-    if (window.__NUXT__ && window.__NUXT__.state) {
-      store.replaceState(window.__NUXT__.state)
-    }
-  }
   
 
   // Create Root instance
@@ -56,8 +46,8 @@ async function createApp (ssrContext) {
   // making them available everywhere as `this.$router` and `this.$store`.
   const app = {
     router,
-     store,
-    _nuxt: {
+    
+    nuxt: {
       defaultTransition,
       transitions: [ defaultTransition ],
       setTransitions (transitions) {
@@ -74,51 +64,98 @@ async function createApp (ssrContext) {
           }
           return transition
         })
-        this.$options._nuxt.transitions = transitions
+        this.$options.nuxt.transitions = transitions
         return transitions
       },
       err: null,
       dateErr: null,
       error (err) {
         err = err || null
-        if (typeof err === 'string') {
-          err = { statusCode: 500, message: err }
-        }
-        const _nuxt = this._nuxt || this.$options._nuxt
-        _nuxt.dateErr = Date.now()
-        _nuxt.err = err
+        app.context._errored = !!err
+        if (typeof err === 'string') err = { statusCode: 500, message: err }
+        const nuxt = this.nuxt || this.$options.nuxt
+        nuxt.dateErr = Date.now()
+        nuxt.err = err
+        // Used in lib/server.js
+        if (ssrContext) ssrContext.nuxt.error = err
         return err
       }
     },
     ...App
   }
-
+  
   const next = ssrContext ? ssrContext.next : location => app.router.push(location)
-  let route = router.currentRoute
-  if (!ssrContext) {
+  // Resolve route
+  let route
+  if (ssrContext) {
+    route = router.resolve(ssrContext.url).route
+  } else {
     const path = getLocation(router.options.base)
     route = router.resolve(path).route
   }
-  const ctx = getContext({
-    isServer: !!ssrContext,
-    isClient: !ssrContext,
+
+  // Set context to app.context
+  await setContext(app, {
     route,
     next,
-    error: app._nuxt.error.bind(app),
-    store,
+    error: app.nuxt.error.bind(app),
+    
+    payload: ssrContext ? ssrContext.payload : undefined,
     req: ssrContext ? ssrContext.req : undefined,
     res: ssrContext ? ssrContext.res : undefined,
     beforeRenderFns: ssrContext ? ssrContext.beforeRenderFns : undefined
-  }, app)
+  })
+
+  const inject = function (key, value) {
+    if (!key) throw new Error('inject(key, value) has no key provided')
+    if (!value) throw new Error('inject(key, value) has no value provided')
+    key = '$' + key
+    // Add into app
+    app[key] = value
+    
+    // Check if plugin not already installed
+    const installKey = '__nuxt_' + key + '_installed__'
+    if (Vue[installKey]) return
+    Vue[installKey] = true
+    // Call Vue.use() to install the plugin into vm
+    Vue.use(() => {
+      if (!Vue.prototype.hasOwnProperty(key)) {
+        Object.defineProperty(Vue.prototype, key, {
+          get () {
+            return this.$root.$options[key]
+          }
+        })
+      }
+    })
+  }
 
   
-  if (typeof plugin0 === 'function') await plugin0(ctx)
+
+  // Plugin execution
   
+  
+
+  // If server-side, wait for async component to be resolved first
+  if (process.server && ssrContext && ssrContext.url) {
+    await new Promise((resolve, reject) => {
+      router.push(ssrContext.url, resolve, () => {
+        // navigated to a different route in router guard
+        const unregister = router.afterEach(async (to, from, next) => {
+          ssrContext.url = to.fullPath
+          app.context.route = await getRouteData(to)
+          app.context.params = to.params || {}
+          app.context.query = to.query || {}
+          unregister()
+          resolve()
+        })
+      })
+    })
+  }
 
   return {
     app,
     router,
-     store 
+    
   }
 }
 

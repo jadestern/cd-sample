@@ -1,74 +1,65 @@
-<template lang="pug">
-  main
-    Navigation
-    Section1
-    h1 test!! what's up
-    h1 {{ lodashData }}
-    h5 Below is asyncData fetched
-    pre {{ extract }}
-    nuxt-link(to="/1") to 1
-    nuxt-link(to="/2") to 2
+<template>
+  <section class="container">
+    <div>
+      <app-logo/>
+      <h1 class="title">
+        nuxt-starter
+      </h1>
+      <h2 class="subtitle">
+        Nuxt.js project
+      </h2>
+      <div class="links">
+        <a
+          href="https://nuxtjs.org/"
+          target="_blank"
+          class="button--green">Documentation</a>
+        <a
+          href="https://github.com/nuxt/nuxt.js"
+          target="_blank"
+          class="button--grey">GitHub</a>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
-import axios from '~/plugins/axios';
-import Navigation from '~/components/Navigation';
-import Section1 from '~/components/home/Section1';
-import _ from 'lodash';
-// import NoSSR from 'vue-no-ssr';
-/* eslint-disable */
+import AppLogo from '~/components/AppLogo.vue'
+
 export default {
   components: {
-    Navigation,
-    Section1,
-  },
-  async asyncData({ params }) {
-    const { data } = await axios.get(`https://swapi.co/api/starships/9/`).catch(err => err);
-    // console.log(data);
-
-    return {
-      extract: data,
-    };
-  },
-	data(){
-  	return {
-  		dataArr: [1,2,3,4]
-	  }
-	},
-	computed: {
-  	lodashData(){
-  		return _
-				  .chain(this.dataArr)
-				  .map((item) => {
-				  	return item * 10
-				  });
-	  }
-	}
-  // async asyncData(context) {
-  //   const { data } = await axios.get('/api/users');
-  //   console.log('asyncData');
-  //   // console.log(context);
-  //   return { users: data };
-  // },
-  // fetch({ store, params }) {
-  //   console.log('fetch');
-  // },
-  // head() {
-  //   console.log('head');
-  //   console.log('??')
-  //   return {
-  //     title: 'Users',
-  //   };
-  // },
-  // validate({ params, query, store}) {
-  //   console.log('validate hook in regular route', params);
-  //   return true;
-  // },
-};
+    AppLogo
+  }
+}
 </script>
 
-<style lang="scss" scoped>
-	h1{
-		font-size: 100px;
-	}
+<style>
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.title {
+  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
+  display: block;
+  font-weight: 300;
+  font-size: 100px;
+  color: #35495e;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  font-weight: 300;
+  font-size: 42px;
+  color: #526488;
+  word-spacing: 5px;
+  padding-bottom: 15px;
+}
+
+.links {
+  padding-top: 15px;
+}
 </style>
+
